@@ -95,7 +95,6 @@ export function CollapseMenuButton({
               )}
             >
               <ChevronDownIcon
-                size={18}
                 className="transition-transform duration-200"
               />
             </div>
