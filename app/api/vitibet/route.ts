@@ -1,16 +1,26 @@
 import { NextResponse } from "next/server";
 import puppeteer from "puppeteer";
+import { redisHelper } from "@/lib/redis"; // Update path to your redisHelper
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const url = "https://www.vitibet.com/index.php?clanek=quicktips&sekce=fotbal&lang=en"; 
+  const url = "https://www.vitibet.com/index.php?clanek=quicktips&sekce=fotbal&lang=en";
+  const CACHE_KEY = "vitebet_cache";
+  const CACHE_TTL = 60 * 60 * 24; // Cache duration: 24 hours
 
   try {
+    // Check if data is available in Redis cache
+    const cachedTips = await redisHelper.get<any[]>(CACHE_KEY);
+    if (cachedTips) {
+      console.log("Using cached data from Redis");
+      return NextResponse.json({ success: true, data: cachedTips });
+    }
+
+    console.log("Scraping data from the website");
     const browser = await puppeteer.launch({
       headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
-      
     });
 
     const page = await browser.newPage();
@@ -57,6 +67,9 @@ export async function GET() {
     });
 
     await browser.close();
+
+    // Store the scraped data in Redis cache
+    await redisHelper.set(CACHE_KEY, tips, CACHE_TTL);
 
     return NextResponse.json({ success: true, data: tips });
   } catch (error: any) {

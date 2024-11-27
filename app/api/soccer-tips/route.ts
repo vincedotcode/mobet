@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import puppeteer from "puppeteer";
+import { redisHelper } from "@/lib/redis";
 
 export const dynamic = "force-dynamic";
 
@@ -19,12 +20,21 @@ function delay(ms: number): Promise<void> {
 }
 
 export async function GET() {
-  const url = "https://soccertips.net/free-soccer-tips/";
+  const CACHE_KEY = "soccer_tips";
+  const CACHE_TTL = 60 * 60 * 24; // 24 hours
 
   try {
+    // Check if cached data exists
+    const cachedData = await redisHelper.get<Tip[]>(CACHE_KEY);
+    if (cachedData) {
+      console.log("Returning cached data");
+      return NextResponse.json({ success: true, data: cachedData });
+    }
+
+    const url = "https://soccertips.net/free-soccer-tips/";
     const browser = await puppeteer.launch({
-      headless: true, // Ensure it runs in headless mode for server environments
-      args: ["--no-sandbox", "--disable-setuid-sandbox"], // Required for running in environments like Vercel
+      headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
 
     const page = await browser.newPage();
@@ -61,12 +71,10 @@ export async function GET() {
     while (hasMorePages) {
       const pageTips = await scrapePage();
       tips = [...tips, ...pageTips];
-
-      // Check if the "View More" button exists and click it
-      const viewMoreButton = await page.$("button#view-more-button"); // Replace selector as needed
+      const viewMoreButton = await page.$("button#view-more-button");
       if (viewMoreButton) {
         await viewMoreButton.click();
-        await delay(2000); // Delay using the custom delay function
+        await delay(2000);
       } else {
         hasMorePages = false;
       }
@@ -74,9 +82,11 @@ export async function GET() {
 
     await browser.close();
 
-    // Return the scraped tips as JSON
+    // Cache the scraped data
+    await redisHelper.set(CACHE_KEY, tips, CACHE_TTL);
+
     return NextResponse.json({ success: true, data: tips });
-  } catch (error : any) {
+  } catch (error: any) {
     console.error("Error scraping soccer tips:", error);
     return NextResponse.json(
       { success: false, message: "Failed to fetch soccer tips", error: error.message },

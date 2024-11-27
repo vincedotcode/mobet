@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTheme } from "next-themes";
+import { redisHelper } from "@/lib/redis"; // Adjust path based on your file structure
 
 interface SoccerTip {
     time: string;
@@ -21,26 +22,47 @@ export default function SoccerTipsViewer() {
     const [search, setSearch] = useState("");
     const [sortBy, setSortBy] = useState<keyof SoccerTip>("time");
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-    const [tips, setTips] = useState<SoccerTip[]>([]); // Default to an empty array
+    const [tips, setTips] = useState<SoccerTip[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const { theme } = useTheme();
 
-    // Fetch tips from API
+    const CACHE_KEY = "soccer_tips";
+    const CACHE_TTL = 60 * 60 * 24; // 24 hours
+
+    // Fetch tips: Check Redis first, then call API if Redis data is missing or expired
     useEffect(() => {
         const fetchTips = async () => {
             try {
                 setLoading(true);
                 setError(null);
+
+                // Attempt to fetch data from Redis
+                const cachedTips = await redisHelper.get<SoccerTip[]>(CACHE_KEY);
+                if (cachedTips) {
+                    console.log("Using cached data");
+                    setTips(cachedTips);
+                    return;
+                }
+
+                // If no data in Redis, call the API
+                console.log("Fetching data from API");
                 const response = await fetch("/api/soccer-tips");
                 if (!response.ok) {
-                    throw new Error("Failed to fetch data");
+                    throw new Error("Failed to fetch data from API");
                 }
                 const data = await response.json();
-                console.log("this is the tips", data)
-                setTips(data.data || []); // Fallback to an empty array if data.tips is undefined
+
+                if (data.success) {
+                    setTips(data.data);
+
+                    // Store the fetched data in Redis with an expiration time
+                    await redisHelper.set(CACHE_KEY, data.data, CACHE_TTL);
+                } else {
+                    throw new Error(data.message || "Unknown error occurred");
+                }
             } catch (err: any) {
-                setError(err.message);
+                setError(err.message || "Failed to fetch data");
             } finally {
                 setLoading(false);
             }
@@ -50,7 +72,6 @@ export default function SoccerTipsViewer() {
     }, []);
 
     const filteredAndSortedTips = useMemo(() => {
-        // Ensure tips is always an array and filter safely
         return (tips || [])
             .filter(
                 (tip) =>
