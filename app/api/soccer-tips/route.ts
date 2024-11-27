@@ -11,10 +11,20 @@ type Tip = {
   league: string;
   match: string;
   tip: string;
-  odds: string;
+  odds: string; // Original odds scraped
+  convertedOdds: string; // Converted odds
   tipster: string;
   result: string;
 };
+
+// Helper function to convert odds
+function convertOdds(rawOdds: string): string {
+  const oddsValue = parseFloat(rawOdds);
+  if (isNaN(oddsValue)) {
+    return rawOdds; // Return as-is if the odds are not a valid number
+  }
+  return (oddsValue + 1).toFixed(2); // Convert to decimal format by adding 1
+}
 
 export async function GET() {
   const CACHE_KEY = "soccer_tips";
@@ -51,7 +61,9 @@ export async function GET() {
       const result = $(row).find("td[id='result'] .match_result").text().trim() || "";
 
       if (time && date && match && tip) {
-        tips.push({ time, date, league, match, tip, odds, tipster, result });
+        // Convert odds and add to the Tip object
+        const convertedOdds = convertOdds(odds);
+        tips.push({ time, date, league, match, tip, odds, convertedOdds, tipster, result });
       }
     });
 
