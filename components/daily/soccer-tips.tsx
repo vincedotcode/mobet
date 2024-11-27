@@ -103,7 +103,7 @@ export default function SoccerTipsViewer() {
         <div className="my-2">
             <div className="py-3">
                 <Card className="p-5">
-                    <CardTitle className="text-lg">Soccer Tips</CardTitle>
+                    <CardTitle className="text-lg">Mobet Generated Tips</CardTitle>
                 </Card>
             </div>
             <Card className="overflow-hidden backdrop-blur-sm transition-all duration-300">

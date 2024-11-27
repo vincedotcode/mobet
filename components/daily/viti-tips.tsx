@@ -77,12 +77,18 @@ export function VitiProfessionalBets() {
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="text-2xl font-bold flex items-center gap-2">
+    <>
+    <div className="py-3">
+                <Card className="p-5">
+                <CardTitle className="text-2xl font-bold flex items-center gap-2">
           <Trophy className="h-6 w-6" />
           Viti Professional Bets
         </CardTitle>
+                </Card>
+            </div>
+            <Card className="w-full">
+      <CardHeader>
+       
       </CardHeader>
       <CardContent>
         <Table>
@@ -121,5 +127,7 @@ export function VitiProfessionalBets() {
         </Table>
       </CardContent>
     </Card>
+    </>
+ 
   );
 }
