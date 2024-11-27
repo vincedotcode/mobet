@@ -19,7 +19,8 @@ import {
 } from "@/components/ui/tooltip";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { useStore } from "@/hooks/use-store";
-
+import Daily from "@/components/daily/soccer-tips"
+import { VitiProfessionalBets } from "@/components/daily/viti-tips";
 export default function DashboardPage() {
   const sidebar = useStore(useSidebar, (x) => x);
   if (!sidebar) return null;
@@ -39,6 +40,11 @@ export default function DashboardPage() {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
+
+      <Daily />
+      <VitiProfessionalBets />
+
+      
     
     </ContentLayout>
   );
