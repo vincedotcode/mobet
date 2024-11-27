@@ -15,6 +15,7 @@ interface SoccerTip {
     match: string;
     tip: string;
     odds: number;
+    convertedOdds: number;
     result?: string;
 }
 
@@ -157,7 +158,7 @@ export default function SoccerTipsViewer() {
                                                 {tip.tip}
                                             </Badge>
                                         </TableCell>
-                                        <TableCell>{tip.odds}</TableCell>
+                                        <TableCell>{tip.convertedOdds}</TableCell>
                                         <TableCell>
                                             {tip.result ? (
                                                 <Badge
