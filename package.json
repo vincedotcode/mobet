@@ -42,6 +42,8 @@
     "@sparticuz/chromium-min": "^126.0.0",
     "@upstash/redis": "^1.34.3",
     "@vercel/edge-config": "^1.4.0",
+    "axios": "^1.7.8",
+    "cheerio": "^1.0.0",
     "chrome-aws-lambda": "^10.1.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -71,6 +73,7 @@
     "zustand": "^5.0.1"
   },
   "devDependencies": {
+    "@types/cheerio": "^0.22.35",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
