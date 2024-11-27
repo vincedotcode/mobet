@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import chromium from "@sparticuz/chromium-min"; // Lightweight Chromium for Lambda
 import puppeteer from "puppeteer-core";
 import { redisHelper } from "@/lib/redis";
 
@@ -19,6 +20,23 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+async function setupPuppeteer() {
+  const isLocal = !!process.env.CHROME_EXECUTABLE_PATH; // Detect local environment
+
+  const launchOptions = {
+    headless: true,
+    args: isLocal
+      ? ["--no-sandbox", "--disable-setuid-sandbox", "--disable-extensions"]
+      : chromium.args, // Use specific arguments for local or serverless
+    defaultViewport: chromium.defaultViewport,
+    executablePath: isLocal
+      ? process.env.CHROME_EXECUTABLE_PATH
+      : await chromium.executablePath(), // Dynamic path for local/serverless
+  };
+
+  return launchOptions;
+}
+
 export async function GET() {
   const CACHE_KEY = "soccer_tips";
   const CACHE_TTL = 60 * 60 * 24; // 24 hours
@@ -32,11 +50,9 @@ export async function GET() {
     }
 
     const url = "https://soccertips.net/free-soccer-tips/";
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
+    const launchOptions = await setupPuppeteer();
 
+    const browser = await puppeteer.launch(launchOptions);
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: "networkidle2" });
 
