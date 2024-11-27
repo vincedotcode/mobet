@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import chromium from "chrome-aws-lambda";
+import puppeteer from "puppeteer-core";
 import { redisHelper } from "@/lib/redis";
 
 export const dynamic = "force-dynamic";
@@ -32,12 +32,9 @@ export async function GET() {
     }
 
     const url = "https://soccertips.net/free-soccer-tips/";
-    const browser = await chromium.puppeteer.launch({
-      args: [...chromium.args, "--hide-scrollbars", "--disable-web-security"],
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath,
+    const browser = await puppeteer.launch({
       headless: true,
-      ignoreHTTPSErrors: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
 
     const page = await browser.newPage();
