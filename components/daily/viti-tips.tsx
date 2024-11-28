@@ -92,7 +92,7 @@ export function VitiProfessionalBets() {
       </CardHeader>
       <CardContent>
         <Table>
-          <TableCaption>Professional soccer tips curated by Viti.</TableCaption>
+          <TableCaption>Professional soccer tips curated by Mobet.</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead>League</TableHead>

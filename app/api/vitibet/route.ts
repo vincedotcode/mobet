@@ -18,7 +18,6 @@ export async function GET() {
       return NextResponse.json({ success: true, data: cachedTips });
     }
 
-    console.log("Scraping data from the website");
 
     // Fetch the HTML content of the page
     const { data: html } = await axios.get(url);
