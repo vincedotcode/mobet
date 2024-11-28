@@ -97,7 +97,7 @@ export default function FootballTips() {
               </TableBody>
             </Table>
           ) : (
-            <p>No tips available for "Best Football Tip for Today".</p>
+            <p>No tips available for &quot;Best Football Tip for Today&quot;.</p>
           )}
         </CardContent>
       </Card>
@@ -133,7 +133,7 @@ export default function FootballTips() {
               </TableBody>
             </Table>
           ) : (
-            <p>No tips available for "Win Accumulator Tip for Today".</p>
+            <p>No tips available for &quot;Win Accumulator Tip for Today&quot;.</p>
           )}
         </CardContent>
       </Card>
