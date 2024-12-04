@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     description: 'Discover Mobet: the platform that provides curated betting tips and tools for responsible gambling. Start your journey today!',
   },
   icons: {
-    icon: '/favicon.ico',
+    icon: '../public/icons/favicon.ico',
   },
 };
 
