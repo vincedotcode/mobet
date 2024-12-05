@@ -5,29 +5,45 @@ import User from "@/lib/database/models/user.model";
 import { connectToDatabase } from "../database/mongoose";
 import { handleError } from "@/lib/utils";
 
-export async function createSubscription(userId: string, planId: string) {
+export async function createSubscription(
+  userId: string,
+  planId: string,
+  subscriptionId: string,
+  baToken?: string,
+  token?: string
+) {
   try {
     await connectToDatabase();
 
-    // Verify the user exists
+    // Verify if the user exists
     const user = await User.findById(userId);
     if (!user) throw new Error("User not found");
 
-    // Create a new subscription entry in the database
+    // Create a new subscription entry
     const newSubscription = await Subscription.create({
-      userId,
-      planId,
-      status: "PENDING",
+      user: userId,
+      plan: planId,
+      status: "active",
+      startDate: new Date(), // Current date for subscription start
+      paymentMethod: "paypal", // Defaulting to PayPal
+      subscriptionId,
+      baToken,
+      token,
+    });
+
+    // Update the user's subscription status and plan
+    await User.findByIdAndUpdate(userId, {
+      plan: planId,
+      isSubscribed: true,
     });
 
     return JSON.parse(JSON.stringify(newSubscription));
   } catch (error) {
-    console.error(error);
+    console.error("Error creating subscription:", error);
     handleError(error);
     throw new Error("Failed to create subscription");
   }
 }
-
 export async function handleSubscriptionApproval(subscriptionId: string, subscriptionDetails: any) {
   try {
     await connectToDatabase();

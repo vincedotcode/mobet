@@ -9,26 +9,34 @@ const SubscriptionSchema = new Schema(
     },
     plan: {
       type: String,
-      enum: ["basic", "pro", "enterprise"],
+      enum: ["basic", "pro"],
       required: true,
     },
     status: {
       type: String,
-      enum: ["active", "inactive", "canceled"],
-      default: "inactive",
+      enum: ["active", "inactive", "canceled", "pending"],
+      default: "pending",
     },
     startDate: {
       type: Date,
-      default: Date.now,
-    },
-    endDate: {
-      type: Date,
+      required: true,
     },
     paymentMethod: {
       type: String,
       enum: ["paypal", "credit_card", "other"],
       default: "paypal",
     },
+    subscriptionId: {
+      type: String,
+      required: true,
+    },
+    baToken: {
+      type: String,
+    },
+    token: {
+      type: String,
+    },
+
   },
   {
     timestamps: true,
