@@ -77,7 +77,7 @@ export default function Login() {
           variant: "default",
         });
 
-        router.push("/");  // Redirect to the homepage after successful login
+        router.push("/dashboard");  // Redirect to the homepage after successful login
       }
 
 

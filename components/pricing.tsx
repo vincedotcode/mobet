@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Wrapper from "./global/wrapper";
 import Container from "./global/container";
 import SectionBadge from "./ui/section-badge";
@@ -14,8 +14,42 @@ import {
 import { cn } from "@/lib/utils";
 import { Zap } from "lucide-react";
 import Link from "next/link";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+} from "./ui/dialog";
+import axios from "axios";
 
 const Pricing = () => {
+  const [selectedPlan, setSelectedPlan] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubscription = async () => {
+    if (!selectedPlan) return;
+
+    try {
+      setLoading(true);
+      const response = await axios.post("/api/paypal/create-subscription", {
+        planId: selectedPlan.planId,
+      });
+
+      const { subscription } = response.data;
+      window.location.href = subscription.links.find(
+        (link: any) => link.rel === "approve"
+      )?.href;
+    } catch (error: any) {
+      console.error("Subscription creation failed:", error.message);
+      alert("Failed to create subscription. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Wrapper className="flex flex-col items-center justify-center py-12 relative">
       <div className="hidden md:block absolute top-0 -right-1/3 w-72 h-72 bg-blue-500 rounded-full blur-[10rem] -z-10" />
@@ -69,15 +103,39 @@ const Pricing = () => {
               </CardContent>
 
               <CardFooter className="mt-auto">
-                <Link
-                  href={"#"}
-                  className={cn(
-                    "w-full text-center text-primary-foreground bg-primary p-2 rounded-md text-sm font-medium",
-                    card.title !== "Pro" && "!bg-foreground !text-background"
-                  )}
-                >
-                  {card.buttonText}
-                </Link>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Link
+                      href={"#"}
+                      className={cn(
+                        "w-full text-center text-primary-foreground bg-primary p-2 rounded-md text-sm font-medium",
+                        card.title !== "Pro" &&
+                          "!bg-foreground !text-background"
+                      )}
+                      onClick={() => setSelectedPlan(card)}
+                    >
+                      {card.buttonText}
+                    </Link>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Confirm Your Subscription</DialogTitle>
+                      <DialogDescription>
+                        You are about to subscribe to the <b>{card.title}</b>{" "}
+                        plan. Are you sure you want to proceed?
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <button
+                        className="w-full bg-primary text-white p-2 rounded-md"
+                        onClick={handleSubscription}
+                        disabled={loading}
+                      >
+                        {loading ? "Processing..." : "Proceed to PayPal"}
+                      </button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </CardFooter>
             </Card>
           ))}

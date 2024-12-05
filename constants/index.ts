@@ -67,6 +67,7 @@ export const pricingCards = [
       "AI Analytics",
 ,      "Basic performance tracking",
     ],
+    planId: "P-78M08887U3295945BM5IJBDI",
     priceId: "price_basic_plan",
   },
   {
@@ -81,6 +82,7 @@ export const pricingCards = [
       "AI-powered insights",
       "Advanced analytics",
     ],
+    planId: "P-78M08887U3295945BM5IJBDI",
     priceId: "price_pro_plan",
   },
 ];

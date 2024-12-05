@@ -43,19 +43,25 @@ const UserSchema = new Schema(
       type: String,
       default: "",
     },
-
     role: {
       type: String,
       enum: ["user", "admin", "system"],
       default: "user",
       required: true,
     },
-
     isAdmin: {
       type: Boolean,
       default: false,
     },
-
+    plan: {
+      type: String,
+      enum: ["basic", "pro", "enterprise", null],
+      default: null,
+    },
+    isSubscribed: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
