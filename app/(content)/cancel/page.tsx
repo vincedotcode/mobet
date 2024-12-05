@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unescaped-entities */ 
+
 import { XCircle } from 'lucide-react';
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
