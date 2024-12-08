@@ -359,6 +359,7 @@ const Icons: IconType = {
       />
     </svg>
   ),
+
   customize: (props: LucideProps) => (
     <svg
       {...props}
